@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ما في حدا بنافسني على حبك</title>
+    <style>
+        :root {
+            --primary: #ff4b2b;
+            --secondary: #ff416c;
+            --bg: #0d0b18;
+            --card-bg: rgba(255, 255, 255, 0.07);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d0b18 0%, #1a0926 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+            text-align: center;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            font-size: 1.05rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6);
+        }
+
+        .input-group {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        input {
+            width: 75%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            text-align: center;
+        }
+
+        .help-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* --- منطقة السحب والإفلات للقلب --- */
+        .drag-instructions {
+            font-size: 0.95rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .letters-dock {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            min-height: 70px;
+        }
+
+        .draggable-letter {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            cursor: grab;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.5);
+            touch-action: none;
+            z-index: 10;
+        }
+
+        .draggable-letter:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .heart-drop-zone {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .heart-drop-zone.hovered {
+            background: rgba(255, 65, 108, 0.2);
+            border-style: solid;
+        }
+
+        .heart-svg-bg {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            fill: rgba(255, 65, 108, 0.15);
+            transition: all 0.5s ease;
+        }
+
+        .heart-drop-zone.completed .heart-svg-bg {
+            fill: var(--primary);
+            transform: scale(1.25);
+            filter: drop-shadow(0 0 15px rgba(255, 75, 43, 0.8));
+        }
+
+        .merged-text {
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .heart-drop-zone.completed .merged-text {
+            opacity: 1;
+        }
+
+        /* --- ورقة الكشط للقصيدة --- */
+        .scratch-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            background: #ffffff;
+        }
+
+        .poem-content {
+            background: #ffffff;
+            color: #222;
+            padding: 25px 20px;
+            text-align: right;
+            line-height: 2.3;
+            font-size: 1.05rem;
+            height: 350px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            z-index: 1;
+            white-space: normal;
+            word-wrap: break-word;
+            border-radius: 15px;
+            user-select: text;
+        }
+
+        .poem-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .poem-content::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+
+        .scratch-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            border-radius: 15px;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .scratcher-tool {
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            cursor: grab;
+            z-index: 10;
+            touch-action: none;
+            border: 2px solid #fff;
+        }
+
+        .scratcher-tool:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        /* تنسيق عرض الصورة وأخذ الرأي */
+        .photo-card-container {
+            width: 100%;
+            max-width: 360px;
+            margin: 15px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .photo-card-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .opinion-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px dashed var(--secondary);
+        }
+
+        .opinion-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .opinion-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--secondary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .opinion-btn:hover, .opinion-btn.selected {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+
+        /* باقي التنسيقات */
+        .img-container { margin: 15px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--primary); }
+        .message-box { background: rgba(255, 255, 255, 0.95); color: #111; padding: 20px; border-radius: 15px; line-height: 1.8; max-height: 320px; overflow-y: auto; text-align: right; font-size: 0.95rem; white-space: pre-wrap; margin: 15px 0; }
+        
+        /* تنسيق الـ ASCII Heart باستخدام pre */
+        .ascii-heart {
+            font-family: monospace;
+            white-space: pre;
+            color: #ff416c;
+            font-size: 14px;
+            line-height: 1.2;
+            margin: 20px auto;
+            display: block;
+            text-align: center;
+            direction: ltr;
+        }
+
+        .time-travel-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+        .time-travel-overlay.active { opacity: 1; pointer-events: all; }
+        .clock-icon { font-size: 4.5rem; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(-360deg); } }
+
+        /* --- تعديل معرض الصور ليصبح عمودياً وبحجم كامل --- */
+        .gallery { 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        .gallery img { 
+            width: 100%; 
+            height: auto; 
+            display: block;
+            border-radius: 15px; 
+            border: 2px solid var(--primary); 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+
+        .red-heart-btn { background: none; border: none; font-size: 3.5rem; cursor: pointer; animation: pulse 1.2s infinite; margin-top: 10px; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        /* تنسيق إطار الفيديو المضمّن */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* نسبة 16:9 */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            background: #000;
+            border-radius: 15px;
+            margin-top: 15px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- الصفحة 1: تسجيل الدخول والتجميع بالسحب -->
+    <div id="page1" class="page active">
+        <div class="card" id="loginCard">
+            <h2>تسجيل الدخول</h2>
+            <br>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="اسم المستخدم">
+                <button class="help-btn" onclick="alert('الاسم اول حبيبه الي')">؟</button>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="كلمة السر">
+                <button class="help-btn" onclick="alert('كلمة السر تاريخ ميلادها')">؟</button>
+            </div>
+            <button class="btn" onclick="checkLogin()">دخول</button>
+        </div>
+
+        <!-- منطقة سحب الحرفين للقلب -->
+        <div id="heartSection" style="display: none;" class="card">
+            <h3>اسحبي الحرفين لداخل القلب لجمعهما</h3>
+            <p class="drag-instructions">حركي حرف M وحرف H إلى منتصف القلب</p>
+            
+            <div class="letters-dock" id="lettersDock">
+                <div class="draggable-letter" id="letterM" data-letter="M">M</div>
+                <div class="draggable-letter" id="letterH" data-letter="H">H</div>
+            </div>
+
+            <div class="heart-drop-zone" id="heartDropZone">
+                <svg class="heart-svg-bg" viewBox="0 0 32 32">
+                    <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/>
+                </svg>
+                <div class="merged-text" id="mergedText">M + H</div>
+            </div>
+        </div>
+
+        <!-- منطقة القصيدة الكشط -->
+        <div id="poemSection" style="display: none;" class="card">
+            <h3>اكشطي البطاقة لرؤية القصيدة والمغلف</h3>
+            <p class="drag-instructions">اسحبي القلب الأحمر فوق البطاقة للكشط، ويمكنك التمرير لرؤية باقي القصيدة بحرية</p>
+            
+            <div class="scratch-wrapper">
+                <div class="scratcher-tool" id="scratchTool">❤️</div>
+                
+                <div class="scratch-container" id="scratchContainer">
+                    <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
+                    <div class="poem-content" id="poemContent">
+تَطَايَرَتِ الأَشْوَاقُ شَاوِيَةَ الحَشَا ... كَجَمْرِ الغَضَى فِي لَيْلَةٍ ذَاتِ صَرْصَرِ
+وَبَاتَتْ حَلَا أَبْهَى الصَّبَابَاتِ جَوْهَرًا ... كَبَدْرٍ بَدَا فِي حَالِكِ اللَّيْلِ مُزْهِرِ
+عَقِيلَةُ حُسْنٍ أَوْرَثَتْنِي حَبَابَهَا ... صَفَاءً كَمَاءِ المَطْلِ الرَّاوِي المُمَطَّرِ
+مَهَاةٌ لَهَا العَهْدُ الوَثِيقُ شَرِيعَةٌ ... كَزُبْرِ الحَدِيدِ الصَّلْبِ لَمْ يَتَكَسَّرِ
+تَصُونُ الهَوَى فِي السِّرِّ وَالجَهْرِ كَالشَّذَى ... وَتَرْفُلُ فِي ثَوْبٍ مِنَ المَجْدِ سُتَّرِ
+فَلَمْ تَعْتَرِفْ يَوْمًا بِهَجْرٍ وَعَقْرَةٍ ... وَلَمْ تَثْنِ عَهْدَ الوَصْلِ دُونَ المُنَكَّرِ
+أَقَامَتْ عَلَى حُبٍّ عَفِيفٍ مُسَرْمَدٍ ... يَجُُولُ بِأَعْمَاقِ الفُؤَادِ المُعَطَّرِ
+وَصَارَتْ لَهُ حِصْنًا إِذَا الخَطْبُ أَعْصَرَا ... وَأَمْنًا يَقِيهِ مِنْ صُرُوفِ التَّحَيُّرِ
+تَهَامَتْ بِذِكْرَاهَا القُلُوبُ وَأَشْرَقَتْ ... لِمَحْبُوبِهَا هَامَتْ بِهِ كَالمُعَفَّرِ
+إِذَا نَادَى مُحَمَّدُ الشَّوْقُ بَيْنَهُمْ ... أَجَابَتْ بِنَبْضٍ كَالمُدَامَةِ مُسْكِرِ
+تَرَى فِيهِ لَيْلًا ذَا فِضَاءِ وَسُؤْدُدٍ ... وَظِلًا وَلَوْذًا فِي الزَّمَانِ المُعَسَّرِ
+فَتَرْخُصُ رُوحًا كَي يَعِيشَ بِنِعْمَةٍ ... وَتَشْفَعُ لِلْخَلِّ العَطُوفِ المُعَزَّرِ
+فَلا طَيْفَ يَمْشِي فِي المَسَارِبِ كُلِّهَا ... سِوَى صُورَةِ البَدْرِ الحَبِيبِ المُذَكَّرِ
+تَنَامُ عَلَى نَبْضِ اسْمِهِ المَعْذُوبِ طَيِّبًا ... كَنَشْوَةِ بَرْدٍ فِي المَنَامِ المُعَطَّرِ
+وَيَبْقَى لَهَا الأَمَلَ الوَثِيقَ رِعَايَةً ... أَمِيرًا عَلَى عَرْشِ النُّفُوسِ المُسَطَّرِ
+وَمَا كَانَ حُبُّ المَرْءِ حِينَ تَقَادَمَتْ ... لَهُ السُّنَنُ القُصْوَى سِوَى كَالأَبَحَّرِ
+سَقَاهَا مُحَمَّدُ الشَّوْقِ كَأْسًا مُصَفّاةً ... بِشَهْدٍ لَذِيذِ الطَّعْمِ طَيِّبِ مَخْبَرِ
+يَرَى فِيهِ دُنْيَاهُ الجَمِيلَةَ كُلَّهَا ... وَفَجْرًا نَقِيًّا جَاءَ بَعْدَ التَّعَثُّرِ
+تَمَلَّكَهَا بِالعَطْفِ فِينَا كَأَنَّهَا ... فَرِيدَةُ دُرٍّ فِي الحَرِيرِ المُمَصَّرِ
+إِذَا ظَمِئَتْ كَانَتْ لَهَا الكَأْسُ جَدْوَلًا ... وَإِنْ بَرَدَتْ كَانَ الرِّدَاءَ المُخَيَّرِ
+لَهَا فِي حََشَاهُ القَصْرُ المُنِيفِ مَكَانَةً ... أَبِيًّا عَلَى شَهْبِ النَّوَائِبِ قَسْوَرِ
+يُحِبُّ حَلَا حُبَّ الإِمْرِئِ حِينَ يَسْتَقِرّ ... يَبِيتُ عَلَى رَعْيِ الهَوَى المُتَجَذِّرِ
+هُمَا قَلْبُ شَاعِرٍ فِي جَسَدَيْنِ مُسْتَقِرّ ... كَبَيْتِ الحِمَى عَبْرَ العُصُورِ المُنَوَّرِ
+تَزَامَنَ نَبْضُ العِشْقِ فِيهِمَا حِكْمَةً ... وَسَارَا بِنُورِ الوَصْلِ دُونَ التَّقَهْقُرِ
+عِمَادُ الهَوَى فِيهِمْ أَمِينٌ مُؤَسَّسٌ ... يَرُدُّ سِهَامَ القَوْمِ شَرَّ التَّكَسُّرِ
+يَعِيشَانِ فِي خَضْرَاءِ قَفْرٍ مَلِيئَةٍ ... بِرَوْحٍ وَرَيْحَانٍ زَكِيٍّ وَعَنْبَرِ
+فَهَلْ بَعْدَ هَذَا الحُبِّ عِشْقٌ لِشَاعِرٍ ... يُغَنِّي بِهِ البَادِي بِشِعْرٍ مُحَبَّرِ؟
+فَلَمَّا جَرَتْ زَلَّاتُ زَهْوٍ وَغَفْلَةٍ ... وَحَادَتْ حَلَا يَوْمًا عَنِ المَنْهَجِ الإِرِي
+فَلَمْ يَبْتَئِسْ خَلٌّ كَرِيمٌ بِمَا جَرَى ... وَلَمْ يَكْنُزِ الحِقْدَ الشَدِيدَ المُشَمَّرِ
+أَتَاهَا مُحَمَّدُ الصَّدُوقُ بِرَحْمَةٍ ... وَأَخَذَ بِيَدَيْهَا نَحْوَ الصَّبَاحِ المُسْفِرِ
+فَعَادَتْ وَتَابَتْ لِلْهُدَى بَعْدَ جَهْلَةٍ ... وَعَادَا لِعَهْدِ الحُبِّ أَبْهَى وَأَكْبَرِ
+
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="goToPage(2)">الصفحة التالية</button>
+        </div>
+    </div>
+
+    <!-- الصفحة 2: عرض الصورة وأخذ الرأي -->
+    <div id="page2" class="page">
+        <div class="card">
+            <h3>ذكرى حلوة تجمعنا ❤️</h3>
+            
+            <div class="photo-card-container">
+                <img src="https://i.ibb.co/HTbKXGKK/1790772525496-2.jpg" alt="صورة تذكارية">
+            </div>
+
+            <div class="opinion-section">
+                <p>شو رأيك بالصورة؟ ✨</p>
+                <div class="opinion-options">
+                    <button class="opinion-btn" onclick="selectOpinion(this)">بتجنن! 😍</button>
+                    <button class="opinion-btn" onclick="selectOpinion(this)">حلوة كثير ❤️</button>
+                    <button class="opinion-btn" onclick="selectOpinion(this)">أحلى ذكرى ✨</button>
+                </div>
+            </div>
+
+            <button id="msgTriggerBtn" class="btn" style="display: none;" onclick="showMsg()">رؤية الرسالة ❤️</button>
+        </div>
+
+        <div id="msgCard" style="display: none;" class="card">
+            <div class="message-box">
+هاي حلوشتي🙂 نص ساعه وبتيجي رسالة القبول بصراحه مش هضاك الحماس الها لانه كان بدي ياكي معي والي لحالي 😔 انا يا حبيبتي ما طلعت غيرتي مش عشان انا ما بغار لا يا روحي انا بغار عليكي وبغار كثير مش شوي بس ما كنت اطلعها عشان ما اخوفك 😔 او انه ازعلك بالغلط 😔 بس خلص يا قلبي راح اطلعها بس اكيد مش راح اخوفك او ازعلك بس راح تطلع غيرتي بس زعلان منك يا قلبي 🥺 ليش ما حكيتي انه بدك غيرتي تطلع على كلا يا قلبي عادي 🥺 حبيبتي اسمعيني شوي ربي يرضى عليكي انتي حبيتيه بس مش حب حب هاض اسمه اعجاب وهو نفس الأشي يا قلبي 🥺 ويا قلبي راح يجيه يوم ويحكيلك ما بدي نكمل بتعرفي ليه لانه ما في حب هيك ببلش انا قعدت معك شهرين قبل ما نحكي وحبيتك كثير ولما صرنا نحكي قعدت 6 اشهر عشان اكسب ثقتك وشهر كامل بخطط كيف بدي اعترفلك وبصراحه الخطه لسا حافظها 🙂 كانت بيوم العيد عيد الفطر كنت ناوي أجهزلك موقع بحكي فيه عن ذكرياتنا فيه وكيف نعجبت فيكي وقديش تعبت كمان 🙂 وحتى التلميحات كنت بدي احكيلك عنهم 😂😂 بس صارت احلى خناقه بحياتي 🥺💕 واعترفتلك 🙂 بس يومها اللغز لسا ذاكره كلمه فيها بائين ونهايتها ضمير متصل و بالنص حححححححرف من اسمك 😂😂😂 حبيبتي انتي ما بتحبي ثنين يا قلبي انتي نعجبتي بواحد بس بتحبي الثاني وانا الي حبيتيه ليش لانه هضاك يا قلبي انتي مو واثقه فيه ولا حتى مأمنه اله وانا امانك هون صح ولا مو صح 🥺 حبيبتي اسمعيني انا وربي راح اغير حالي غيرتي راح تطلع وبنفس الوقت راح اصير احن واقلك راح اصير احبك اكثر من اهلك واحبك اكثر من حالي 😂💕 حبيبتي توعديني وعد يا روحي 🥺 انه تتركيه بس ما بدي منك غير هيك ما بدي تعتذريلي انا مسامحك بس اتركيه يا قلبي 🥺💕 عشاني ولا ما الي شان عندك 🥺 انا حكيت لامي صراحه عنك ومش بحكي قدامك لا انا حكيتلها عنجد 🙂 وهي وافقت حكتلي انه ازبط مادياتي وحكتلي راح اطلبلك ياها 🙂 وبصراحه الي ساعتين بغني فوق راسها اريد الجيزة وما حدا فاهم ليش بغني هيك الا هي 😂😂😂 حبيبتي انا بحبك لو بدي احرق الأخضر واليابس عشان اثبت هالأشي من عيوني 🥺💕 هسا بعرف هون ببين انه بخاف بس انا مش قصة خوف انا سندك وامانك الي مستحيل يخذلك والحمدلله سنه كامله لما كنتي تزعلي تلاقيني جنبك لما تتعبي تلاقيني معك لما تتضايقي اخليكي تفشي غلك في لانه عارف انا الوحيد الي بحياتك بقدر يحن عليكي هالقد من بعد اهلك طبعا بس حبيبتي انا مش زي اي شب بالدنيا ولا حتى زي هضاك 😒 انا شب فتح قلبه لبنت وثق فيها وحبها من كل قلبه وما رضي ينظر لغيرها لانه هي بس معبيه قلبه 🥹💕 كتكوتي لسا قدامنا الحياة انا وانتي ولسا بنحب بعض انتي جاوبيني هل بستاهل نخسر بعض ولا لا الجواب لا انا عارف انك معه عشان ما تكسري خاطره بس . بس حبي اول عن تالي انتي الي راح تتعبي يعني عجبك هيك بالله الك اسبوعين تعبانه وزعلانه وهو ما بعرف عنك اصلا اله بس بنت تيجي تحكي تروح بس انا طول الأسبوعين ما هدي الي بال وضليت قاعد وادعيلك وادعي ما نفترق ويهدي بالك ويبعد عنك الزعل وحتى لما حكيتيلي القصه انا وربي نقهرت وضليت اسبوع كامل مقهور ولما اجيتي الجمعه الي بعدها كان بدي افتح الموضوع معك لما اروح على البيت بس يومها صارت كم مشكله عندك واضطريتي تروحي ولحتى اجيتي اليوم حبيبتي انا وانتي حرام نخسر بعض قلوبنا معلقه ببعض وبنحب بعض وبنعرف بعض اكثر من اهالينا صح ولا لا وانا لساتني بقلبك مكاني محفوظ وعارف ما في شب غيري فيه والي عملتيه بس كان سهوة بس هل نخلي سهوة تزعلنا من بعض لا الغلطه بتتصلح وانا راح اساعدك تصلحيها بتعرفي ليش انا ما مسكتك وتخناقت معك لانه انا سندك وامانك الغيرة مو بالصوت العالي وانه اقيم القيامه واعمل مشكله الغيره هاي بتكون مصطنعه والغيرة الصافيه هاي تعريفها الغيرة الصافية في الحب هي شعور طبيعي نابع من الاهتمام والخوف على مكانة الشخص عندك، بدون ما يتحول لسيطرة أو شك أو أذى. يعني مثلًا: تفرح لاهتمامه فيك، وتضايق شوي إذا حسّيت إن اهتمامه راح لغيرك. تخاف تخسره، لكن ما تمنعه من علاقاته الطبيعية. تحس بالغيرة، لكن ما تتهمه أو تراقب كل تصرفاته. تحترم حريته وحدوده حتى لو مشاعرك أحيانًا تكون قوية. والأهم: الغيرة تكون إشارة للمشاعر، مش مبرر للتحكم. وانا هيك عملت وعشان هيك حبيبتي اتركيه وانا بعوضك عن كل اشي غيره حب كله بعوضك عنه وكمان جاية فترة تكميلي يعني راح يصير النا وقت نحكي وراح تشوفي كيف محمد هاض راح يصير محمد ثاني مش محمد مش منيح لا محمد احسن من محمد هاض يا روحي 🥺💕 اوعديني يا قلبي انه تتركيه وتبعدي عنه وراح نفتح بداية جديدة احلى من الي قبل قصة حب جديده احلى من الي راحت وما بدي تعتذريلي انا مسامحك زي ما حكيتلك يا قلبي 🥺💕 وعد يا حلوشتي 🥺 كملي باقي الهدية وتعالي يا قلبوشتي 🥺 في ميمو بده يعشقك ويحبك كثير كثير كثير كثير كثير كثير كثير كثير كثير كثير كثير 😂💕💕💕 وكماااااااااااااان وعزززت كتااااب الللله لو ذكر يقربلك لو كان نموول لأحرق الأردن بالي فيها هاض الناقص ما في بنات غير حبيبتي منننننننننوووووووععععععععع فااااهمه واذا بتقولي ليش بتمثل جد بصلك لاني شوي وبطق من الغيره كمان 😑😑😑😑😑😑😑😑😑
+            وكمان يا قلبوشه ما قبلوني بس راح ادرس تمريض كلية توليدو ان شاء الله 🥹💕 ومصمم على التمريض لانه في بنوته غالية علي طلبت وما راح افشلها 🥹💕</div>
+            <button class="btn" onclick="goToPage(3)">الانتقال للصفحة التالية</button>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <div class="card" id="timerCard">
+            <h2>انتظري القليل...</h2>
+            <h1 id="timer" style="font-size: 3.5rem; color: var(--primary); margin: 15px 0;">5</h1>
+        </div>
+
+        <div id="asciiSection" style="display: none;" class="card">
+            <pre class="ascii-heart">
+❤️❤❤     ❤️❤️❤️
+❤️❤️❤     ❤❤❤️
+❤️❤️❤     ❤️❤️❤️
+❤️❤️❤️❤️❤️❤إليك الشفرة البرمجية كاملة بعد إكمال الجزء المقطوع وتطبيق جميع التعديلات المطلوبة:
+
+1. **دعم خيارات اسم المستخدم متعددة:** أصبح يقبل `حلا` أو `حلوش` أو `حلوشتي`.
+2. **دعم صيغ متنوعة لكلمة السر:** تُقبل الأشكال التاليّة: `529` أو `٥٢٩` أو `29/5` أو `5/29` أو `29\5` أو `5\29`.
+3. **تضمين فيديو يوتيوب:** تم إضافة إطار `<iframe>` مضمّن في الصفحة الأخيرة بدلاً من إظهار تنبيه خارجي، بحيث يتيح تشغيل المقطع مباشرة في الصفحة عند الضغط على الزر.
+
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ما في حدا بنافسني على حبك</title>
+    <style>
+        :root {
+            --primary: #ff4b2b;
+            --secondary: #ff416c;
+            --bg: #0d0b18;
+            --card-bg: rgba(255, 255, 255, 0.07);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d0b18 0%, #1a0926 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+            text-align: center;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            font-size: 1.05rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6);
+        }
+
+        .input-group {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        input {
+            width: 75%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            text-align: center;
+        }
+
+        .help-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* --- منطقة السحب والإفلات للقلب --- */
+        .drag-instructions {
+            font-size: 0.95rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .letters-dock {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            min-height: 70px;
+        }
+
+        .draggable-letter {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            cursor: grab;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.5);
+            touch-action: none;
+            z-index: 10;
+        }
+
+        .draggable-letter:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .heart-drop-zone {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .heart-drop-zone.hovered {
+            background: rgba(255, 65, 108, 0.2);
+            border-style: solid;
+        }
+
+        .heart-svg-bg {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            fill: rgba(255, 65, 108, 0.15);
+            transition: all 0.5s ease;
+        }
+
+        .heart-drop-zone.completed .heart-svg-bg {
+            fill: var(--primary);
+            transform: scale(1.25);
+            filter: drop-shadow(0 0 15px rgba(255, 75, 43, 0.8));
+        }
+
+        .merged-text {
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .heart-drop-zone.completed .merged-text {
+            opacity: 1;
+        }
+
+        /* --- ورقة الكشط للقصيدة --- */
+        .scratch-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            background: #ffffff;
+        }
+
+        .poem-content {
+            background: #ffffff;
+            color: #222;
+            padding: 25px 20px;
+            text-align: right;
+            line-height: 2.3;
+            font-size: 1.05rem;
+            height: 350px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            z-index: 1;
+            white-space: normal;
+            word-wrap: break-word;
+            border-radius: 15px;
+            user-select: text;
+        }
+
+        .poem-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .poem-content::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+
+        .scratch-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            border-radius: 15px;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .scratcher-tool {
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            cursor: grab;
+            z-index: 10;
+            touch-action: none;
+            border: 2px solid #fff;
+        }
+
+        .scratcher-tool:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        /* تنسيق عرض الصورة وأخذ الرأي */
+        .photo-card-container {
+            width: 100%;
+            max-width: 360px;
+            margin: 15px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .photo-card-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .opinion-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px dashed var(--secondary);
+        }
+
+        .opinion-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .opinion-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--secondary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .opinion-btn:hover, .opinion-btn.selected {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+
+        /* باقي التنسيقات */
+        .img-container { margin: 15px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--primary); }
+        .message-box { background: rgba(255, 255, 255, 0.95); color: #111; padding: 20px; border-radius: 15px; line-height: 1.8; max-height: 320px; overflow-y: auto; text-align: right; font-size: 0.95rem; white-space: pre-wrap; margin: 15px 0; }
+        
+        /* تنسيق الـ ASCII Heart باستخدام pre */
+        .ascii-heart {
+            font-family: monospace;
+            white-space: pre;
+            color: #ff416c;
+            font-size: 14px;
+            line-height: 1.2;
+            margin: 20px auto;
+            display: block;
+            text-align: center;
+            direction: ltr;
+        }
+
+        .time-travel-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+        .time-travel-overlay.active { opacity: 1; pointer-events: all; }
+        .clock-icon { font-size: 4.5rem; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(-360deg); } }
+
+        /* --- معرض الصور --- */
+        .gallery { 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        .gallery img { 
+            width: 100%; 
+            height: auto; 
+            display: block;
+            border-radius: 15px; 
+            border: 2px solid var(--primary); 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+
+        .red-heart-btn { background: none; border: none; font-size: 3.5rem; cursor: pointer; animation: pulse 1.2s infinite; margin-top: 10px; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        /* تضمين فيديو يوتيوب */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            margin-top: 15px;
+            border: 2px solid var(--primary);
+            display: none;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- الصفحة 1: تسجيل الدخول والتجميع بالسحب -->
+    <div id="page1" class="page active">
+        <div class="card" id="loginCard">
+            <h2>تسجيل الدخول</h2>
+            <br>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="اسم المستخدم">
+                <button class="help-btn" onclick="alert('الاسم اول حبيبه الي')">؟</button>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="كلمة السر">
+                <button class="help-btn" onclick="alert('كلمة السر تاريخ ميلادها')">؟</button>
+            </div>
+            <button class="btn" onclick="checkLogin()">دخول</button>
+        </div>
+
+        <!-- منطقة سحب الحرفين للقلب -->
+        <div id="heartSection" style="display: none;" class="card">
+            <h3>اسحبي الحرفين لداخل القلب لجمعهما</h3>
+            <p class="drag-instructions">حركي حرف M وحرف H إلى منتصف القلب</p>
+            
+            <div class="letters-dock" id="lettersDock">
+                <div class="draggable-letter" id="letterM" data-letter="M">M</div>
+                <div class="draggable-letter" id="letterH" data-letter="H">H</div>
+            </div>
+
+            <div class="heart-drop-zone" id="heartDropZone">
+                <svg class="heart-svg-bg" viewBox="0 0 32 32">
+                    <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,16,21.6,16,21.6s16-12.2,16-21.6C32,3.8,28.2,0,23.6,0z"/>
+                </svg>
+                <div class="merged-text" id="mergedText">M + H</div>
+            </div>
+        </div>
+
+        <!-- منطقة القصيدة الكشط -->
+        <div id="poemSection" style="display: none;" class="card">
+            <h3>اكشطي البطاقة لرؤية القصيدة والمغلف</h3>
+            <p class="drag-instructions">اسحبي القلب الأحمر فوق البطاقة للكشط، ويمكنك التمرير لرؤية باقي القصيدة بحرية</p>
+            
+            <div class="scratch-wrapper">
+                <div class="scratcher-tool" id="scratchTool">❤️</div>
+                
+                <div class="scratch-container" id="scratchContainer">
+                    <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
+                    <div class="poem-content" id="poemContent">
+تَطَايَرَتِ الأَشْوَاقُ شَاوِيَةَ الحَشَا ... كَجَمْرِ الغَضَى فِي لَيْلَةٍ ذَاتِ صَرْصَرِ
+وَبَاتَتْ حَلَا أَبْهَى الصَّبَابَاتِ جَوْهَرًا ... كَبَدْرٍ بَدَا فِي حَالِكِ اللَّيْلِ مُزْهِرِ
+عَقِيلَةُ حُسْنٍ أَوْرَثَتْنِي حَبَابَهَا ... صَفَاءً كَمَاءِ المَطْلِ الرَّاوِي المُمَطَّرِ
+مَهَاةٌ لَهَا العَهْدُ الوَثِيقُ شَرِيعَةٌ ... كَزُبْرِ الحَدِيدِ الصَّلْبِ لَمْ يَتَكَسَّرِ
+تَصُونُ الهَوَى فِي السِّرِّ وَالجَهْرِ كَالشَّذَى ... وَتَرْفُلُ فِي ثَوْبٍ مِنَ المَجْدِ سُتَّرِ
+فَلَمْ تَعْتَرِفْ يَوْمًا بِهَجْرٍ وَعَقْرَةٍ ... وَلَمْ تَثْنِ عَهْدَ الوَصْلِ دُونَ المُنَكَّرِ
+أَقَامَتْ عَلَى حُبٍّ عَفِيفٍ مُسَرْمَدٍ ... يَجُُولُ بِأَعْمَاقِ الفُؤَادِ المُعَطَّرِ
+وَصَارَتْ لَهُ حِصْنًا إِذَا الخَطْبُ أَعْصَرَا ... وَأَمْنًا يَقِيهِ مِنْ صُرُوفِ التَّحَيُّرِ
+تَهَامَتْ بِذِكْرَاهَا القُلُوبُ وَأَشْرَقَتْ ... لِمَحْبُوبِهَا هَامَتْ بِهِ كَالمُعَفَّرِ
+إِذَا نَادَى مُحَمَّدُ الشَّوْقُ بَيْنَهُمْ ... أَجَابَتْ بِنَبْضٍ كَالمُدَامَةِ مُسْكِرِ
+تَرَى فِيهِ لَيْلًا ذَا فِضَاءِ وَسُؤْدُدٍ ... وَظِلًا وَلَوْذًا فِي الزَّمَانِ المُعَسَّرِ
+فَتَرْخُصُ رُوحًا كَي يَعِيشَ بِنِعْمَةٍ ... وَتَشْفَعُ لِلْخَلِّ العَطُوفِ المُعَزَّرِ
+فَلا طَيْفَ يَمْشِي فِي المَسَارِبِ كُلِّهَا ... سِوَى صُورَةِ البَدْرِ الحَبِيبِ المُذَكَّرِ
+تَنَامُ عَلَى نَبْضِ اسْمِهِ المَعْذُوبِ طَيِّبًا ... كَنَشْوَةِ بَرْدٍ فِي المَنَامِ المُعَطَّرِ
+وَيَبْقَى لَهَا الأَمَلَ الوَثِيقَ رِعَايَةً ... أَمِيرًا عَلَى عَرْشِ النُّفُوسِ المُسَطَّرِ
+وَمَا كَانَ حُبُّ المَرْءِ حِينَ تَقَادَمَتْ ... لَهُ السُّنَنُ القُصْوَى سِوَى كَالأَبَحَّرِ
+سَقَاهَا مُحَمَّدُ الشَّوْقِ كَأْسًا مُصَفّاةً ... بِشَهْدٍ لَذِيذِ الطَّعْمِ طَيِّبِ مَخْبَرِ
+يَرَى فِيهِ دُنْيَاهُ الجَمِيلَةَ كُلَّهَا ... وَفَجْرًا نَقِيًّا جَاءَ بَعْدَ التَّعَثُّرِ
+تَمَلَّكَهَا بِالعَطْفِ فِينَا كَأَنَّهَا ... فَرِيدَةُ دُرٍّ فِي الحَرِيرِ المُمَصَّرِ
+إِذَا ظَمِئَتْ كَانَتْ لَهَا الكَأْسُ جَدْوَلًا ... وَإِنْ بَرَدَتْ كَانَ الرِّدَاءَ المُخَيَّرِ
+لَهَا فِي حََشَاهُ القَصْرُ المُنِيفِ مَكَانَةً ... أَبِيًّا عَلَى شَهْبِ النَّوَائِبِ قَسْوَرِ
+يُحِبُّ حَلَا حُبَّ الإِمْرِئِ حِينَ يَسْتَقِرّ ... يَبِيتُ عَلَى رَعْيِ الهَوَى المُتَجَذِّرِ
+هُمَا قَلْبُ شَاعِرٍ فِي جَسَدَيْنِ مُسْتَقِرّ ... كَبَيْتِ الحِمَى عَبْرَ العُصُورِ المُنَوَّرِ
+تَزَامَنَ نَبْضُ العِشْقِ فِيهِمَا حِكْمَةً ... وَسَارَا بِنُورِ الوَصْلِ دُونَ التَّقَهْقُرِ
+عِمَادُ الهَوَى فِيهِمْ أَمِينٌ مُؤَسَّسٌ ... يَرُدُّ سِهَامَ القَوْمِ شَرَّ التَّكَسُّرِ
+يَعِيشَانِ فِي خَضْرَاءِ قَفْرٍ مَلِيئَةٍ ... بِرَوْحٍ وَرَيْحَانٍ زَكِيٍّ وَعَنْبَرِ
+فَهَلْ بَعْدَ هَذَا الحُبِّ عِشْقٌ لِشَاعِرٍ ... يُغَنِّي بِهِ البَادِي بِشِعْرٍ مُحَبَّرِ؟
+فَلَمَّا جَرَتْ زَلَّاتُ زَهْوٍ وَغَفْلَةٍ ... وَحَادَتْ حَلَا يَوْمًا عَنِ المَنْهَجِ الإِرِي
+فَلَمْ يَبْتَئِسْ خَلٌّ كَرِيمٌ بِمَا جَرَى ... وَلَمْ يَكْنُزِ الحِقْدَ الشَدِيدَ المُشَمَّرِ
+أَتَاهَا مُحَمَّدُ الصَّدُوقُ بِرَحْمَةٍ ... وَأَخَذَ بِيَدَيْهَا نَحْوَ الصَّبَاحِ المُسْفِرِ
+فَعَادَتْ وَتَابَتْ لِلْهُدَى بَعْدَ جَهْلَةٍ ... وَعَادَا لِعَهْدِ الحُبِّ أَبْهَى وَأَكْبَرِ
+
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="goToPage(2)">الصفحة التالية</button>
+        </div>
+    </div>
+
+    <!-- الصفحة 2: عرض الصورة وأخذ الرأي -->
+    <div id="page2" class="page">
+        <div class="card">
+            <h3>ذكرى حلوة تجمعنا ❤️</h3>
+            
+            <div class="photo-card-container">
+                <img src="[https://i.ibb.co/HTbKXGKK/1790772525496-2.jpg](https://i.ibb.co/HTbKXGKK/1790772525496-2.jpg)" alt="صورة تذكارية">
+            </div>
+
+            <div class="opinion-section">
+                <p>شو رأيك بالصورة؟ ✨</p>
+                <div class="opinion-options">
+                    <button class="opinion-btn" onclick="selectOpinion(this)">بتجنن! 😍</button>
+                    <button class="opinion-btn" onclick="selectOpinion(this)">حلوة كثير ❤️</button>
+                    <button class="opinion-btn" onclick="selectOpinion(this)">أحلى ذكرى ✨</button>
+                </div>
+            </div>
+
+            <button id="msgTriggerBtn" class="btn" style="display: none;" onclick="showMsg()">رؤية الرسالة ❤️</button>
+        </div>
+
+        <div id="msgCard" style="display: none;" class="card">
+            <div class="message-box">
+هاي حلوشتي🙂 نص ساعه وبتيجي رسالة القبول بصراحه مش هضاك الحماس الها لانه كان بدي ياكي معي والي لحالي 😔 انا يا حبيبتي ما طلعت غيرتي مش عشان انا ما بغار لا يا روحي انا بغار عليكي وبغار كثير مش شوي بس ما كنت اطلعها عشان ما اخوفك 😔 او انه ازعلك بالغلط 😔 بس خلص يا قلبي راح اطلعها بس اكيد مش راح اخوفك او ازعلك بس راح تطلع غيرتي بس زعلان منك يا قلبي 🥺 ليش ما حكيتي انه بدك غيرتي تطلع على كلا يا قلبي عادي 🥺 حبيبتي اسمعيني شوي ربي يرضى عليكي انتي حبيتيه بس مش حب حب هاض اسمه اعجاب وهو نفس الأشي يا قلبي 🥺 ويا قلبي راح يجيه يوم ويحكيلك ما بدي نكمل بتعرفي ليه لانه ما في حب هيك ببلش انا قعدت معك شهرين قبل ما نحكي وحبيتك كثير ولما صرنا نحكي قعدت 6 اشهر عشان اكسب ثقتك وشهر كامل بخطط كيف بدي اعترفلك وبصراحه الخطه لسا حافظها 🙂 كانت بيوم العيد عيد الفطر كنت ناوي أجهزلك موقع بحكي فيه عن ذكرياتنا فيه وكيف نعجبت فيكي وقديش تعبت كمان 🙂 وحتى التلميحات كنت بدي احكيلك عنهم 😂😂 بس صارت احلى خناقه بحياتي 🥺💕 واعترفتلك 🙂 بس يومها اللغز لسا ذاكره كلمه فيها بائين ونهايتها ضمير متصل و بالنص حححححححرف من اسمك 😂😂😂 حبيبتي انتي ما بتحبي ثنين يا قلبي انتي نعجبتي بواحد بس بتحبي الثاني وانا الي حبيتيه ليش لانه هضاك يا قلبي انتي مو واثقه فيه ولا حتى مأمنه اله وانا امانك هون صح ولا مو صح 🥺 حبيبتي اسمعيني انا وربي راح اغير حالي غيرتي راح تطلع وبنفس الوقت راح اصير احن واقلك راح اصير احبك اكثر من اهلك واحبك اكثر من حالي 😂💕 حبيبتي توعديني وعد يا روحي 🥺 انه تتركيه بس ما بدي منك غير هيك ما بدي تعتذريلي انا مسامحك بس اتركيه يا قلبي 🥺💕 عشاني ولا ما الي شان عندك 🥺 انا حكيت لامي صراحه عنك ومش بحكي قدامك لا انا حكيتلها عنجد 🙂 وهي وافقت حكتلي انه ازبط مادياتي وحكتلي راح اطلبلك ياها 🙂 وبصراحه الي ساعتين بغني فوق راسها اريد الجيزة وما حدا فاهم ليش بغني هيك الا هي 😂😂😂 حبيبتي انا بحبك لو بدي احرق الأخضر واليابس عشان اثبت هالأشي من عيوني 🥺💕 هسا بعرف هون ببين انه بخاف بس انا مش قصة خوف انا سندك وامانك الي مستحيل يخذلك والحمدلله سنه كامله لما كنتي تزعلي تلاقيني جنبك لما تتعبي تلاقيني معك لما تتضايقي اخليكي تفشي غلك في لانه عارف انا الوحيد الي بحياتك بقدر يحن عليكي هالقد من بعد اهلك طبعا بس حبيبتي انا مش زي اي شب بالدنيا ولا حتى زي هضاك 😒 انا شب فتح قلبه لبنت وثق فيها وحبها من كل قلبه وما رضي ينظر لغيرها لانه هي بس معبيه قلبه 🥹💕 كتكوتي لسا قدامنا الحياة انا وانتي ولسا بنحب بعض انتي جاوبيني هل بستاهل نخسر بعض ولا لا الجواب لا انا عارف انك معه عشان ما تكسري خاطره بس . بس حبي اول عن تالي انتي الي راح تتعبي يعني عجبك هيك بالله الك اسبوعين تعبانه وزعلانه وهو ما بعرف عنك اصلا اله بس بنت تيجي تحكي تروح بس انا طول الأسبوعين ما هدي الي بال وضليت قاعد وادعيلك وادعي ما نفترق ويهدي بالك ويبعد عنك الزعل وحتى لما حكيتيلي القصه انا وربي نقهرت وضليت اسبوع كامل مقهور ولما اجيتي الجمعه الي بعدها كان بدي افتح الموضوع معك لما اروح على البيت بس يومها صارت كم مشكله عندك واضطريتي تروحي ولحتى اجيتي اليوم حبيبتي انا وانتي حرام نخسر بعض قلوبنا معلقه ببعض وبنحب بعض وبنعرف بعض اكثر من اهالينا صح ولا لا وانا لساتني بقلبك مكاني محفوظ وعارف ما في شب غيري فيه والي عملتيه بس كان سهوة بس هل نخلي سهوة تزعلنا من بعض لا الغلطه بتتصلح وانا راح اساعدك تصلحيها بتعرفي ليش انا ما مسكتك وتخناقت معك لانه انا سندك وامانك الغيرة مو بالصوت العالي وانه اقيم القيامه واعمل مشكله الغيره هاي بتكون مصطنعه والغيرة الصافيه هاي تعريفها الغيرة الصافية في الحب هي شعور طبيعي نابع من الاهتمام والخوف على مكانة الشخص عندك، بدون ما يتحول لسيطرة أو شك أو أذى. يعني مثلًا: تفرح لاهتمامه فيك، وتضايق شوي إذا حسّيت إن اهتمامه راح لغيرك. تخاف تخسره، لكن ما تمنعه من علاقاته الطبيعية. تحس بالغيرة، لكن ما تتهمه أو تراقب كل تصرفاته. تحترم حريته وحدوده حتى لو مشاعرك أحيانًا تكون قوية. والأهم: الغيرة تكون إشارة للمشاعر، مش مبرر للتحكم. وانا هيك عملت وعشان هيك حبيبتي اتركيه وانا بعوضك عن كل اشي غيره حب كله بعوضك عنه وكمان جاية فترة تكميلي يعني راح يصير النا وقت نحكي وراح تشوفي كيف محمد هاض راح يصير محمد ثاني مش محمد مش منيح لا محمد احسن من محمد هاض يا روحي 🥺💕 اوعديني يا قلبي انه تتركيه وتبعدي عنه وراح نفتح بداية جديدة احلى من الي قبل قصة حب جديده احلى من الي راحت وما بدي تعتذريلي انا مسامحك زي ما حكيتلك يا قلبي 🥺💕 وعد يا حلوشتي 🥺 كملي باقي الهدية وتعالي يا قلبوشتي 🥺 في ميمو بده يعشقك ويحبك كثير كثير كثير كثير كثير كثير كثير كثير كثير كثير كثير 😂💕💕💕 وكماااااااااااااان وعزززت كتااااب الللله لو ذكر يقربلك لو كان نموول لأحرق الأردن بالي فيها هاض الناقص ما في بنات غير حبيبتي منننننننننوووووووععععععععع فااااهمه واذا بتقولي ليش بتمثل جد بصلك لاني شوي وبطق من الغيره كمان 😑😑😑😑😑😑😑😑😑
+            وكمان يا قلبوشه ما قبلوني بس راح ادرس تمريض كلية توليدو ان شاء الله 🥹💕 ومصمم على التمريض لانه في بنوته غالية علي طلبت وما راح افشلها 🥹💕</div>
+            <button class="btn" onclick="goToPage(3)">الانتقال للصفحة التالية</button>
+        </div>
+    </div>
+
+    <!-- الصفحة 3: العداد ومفاجأة القلب -->
+    <div id="page3" class="page">
+        <div class="card" id="timerCard">
+            <h2>انتظري القليل...</h2>
+            <h1 id="timer" style="font-size: 3.5rem; color: var(--primary); margin: 15px 0;">5</h1>
+        </div>
+
+        <div id="asciiSection" style="display: none;" class="card">
+            <pre class="ascii-heart">
+❤️❤❤     ❤️❤️❤️
+❤️❤️❤     ❤❤❤️
+❤️❤️❤     ❤️❤️❤️
+❤️❤️❤️❤️❤️❤❤️❤️❤️
+❤️❤❤️❤❤️❤❤️❤️❤️
+❤️❤❤️     ❤️❤❤️
+❤️❤❤️     ❤️❤❤️
+❤️❤❤️     ❤️❤️❤
+❤️❤️❤     ❤️❤️❤
+            </pre>
+            <br>
+            <button class="btn" onclick="hideAsciiAndShowImg()">إخفاء</button>
+        </div>
+
+        <div id="hiddenImgCard" style="display: none;" class="card">
+            <div class="img-container">
+                <img src="[https://i.ibb.co/2YqxKS8V/1790772084935.jpg](https://i.ibb.co/2YqxKS8V/1790772084935.jpg)" alt="صورة تذكارية">
+            </div>
+            <button class="btn" onclick="timeTravelToFeb()">العودة بالزمن</button>
+        </div>
+    </div>
+
+    <!-- الصفحة 4: ذكريات شهر 2 -->
+    <div id="page4" class="page">
+        <div class="card">
+            <h2>تاريخ 2/26</h2>
+            <div class="gallery">
+                <img src="[https://i.ibb.co/JWchZ3WB/IMG-20260930-WA0000.jpg](https://i.ibb.co/JWchZ3WB/IMG-20260930-WA0000.jpg)" alt="ذكريات">
+                <img src="[https://i.ibb.co/NghHzZ1B/IMG-20260930-WA0003.jpg](https://i.ibb.co/NghHzZ1B/IMG-20260930-WA0003.jpg)" alt="ذكريات">
+                <img src="[https://i.ibb.co/67wsWKpq/IMG-20260930-WA0001.jpg](https://i.ibb.co/67wsWKpq/IMG-20260930-WA0001.jpg)" alt="ذكريات">
+                <img src="[https://i.ibb.co/B54NyBfL/IMG-20260930-WA0002.jpg](https://i.ibb.co/B54NyBfL/IMG-20260930-WA0002.jpg)" alt="ذكريات">
+            </div>
+            <br>
+            <button class="btn" onclick="timeTravelToSep()">انتقال</button>
+        </div>
+    </div>
+
+    <!-- الصفحة 5: ذكريات شهر 9 وتفعيل الإهداء -->
+    <div id="page5" class="page">
+        <div class="card">
+            <h2>تاريخ 30/9</h2>
+            <div class="gallery">
+                <img src="[https://i.ibb.co/4RX1PLBY/IMG-20260930-WA0004.jpg](https://i.ibb.co/4RX1PLBY/IMG-20260930-WA0004.jpg)" alt="ذكريات">
+                <img src="[https://i.ibb.co/27yYbxn8/IMG-20260930-WA0005.jpg](https://i.ibb.co/27yYbxn8/IMG-20260930-WA0005.jpg)" alt="ذكريات">
+                <img src="[https://i.ibb.co/hxRGB1XR/IMG-20260930-WA0006.jpg](https://i.ibb.co/hxRGB1XR/IMG-20260930-WA0006.jpg)" alt="ذكريات">
+                <img src="[https://i.ibb.co/fYSPJpJk/IMG-20260930-WA0007.jpg](https://i.ibb.co/fYSPJpJk/IMG-20260930-WA0007.jpg)" alt="ذكريات">
+            </div>
+            <br><br>
+            <button class="red-heart-btn" onclick="playMusic()">❤️</button>
+            
+            <div id="videoContainer" class="video-wrapper">
+                <iframe id="youtubeIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="time-travel-overlay" id="overlay">
+    <div class="clock-icon">⏳</div>
+    <h2 id="overlayText" style="margin-top: 15px;">جاري العودة بالزمن...</h2>
+</div>
+
+<script>
+    function checkLogin() {
+        var user = document.getElementById('username').value.trim();
+        var pass = document.getElementById('password').value.trim();
+        
+        // خيارات اسم المستخدم المسموحة
+        var allowedUsers = ['حلا', 'حلوش', 'حلوشتي'];
+        // خيارات كلمة السر المسموحة
+        var allowedPasses = ['529', '٥٢٩', '29/5', '5/29', '29\\5', '5\\29'];
+
+        if (allowedUsers.includes(user) && allowedPasses.includes(pass)) {
+            document.getElementById('loginCard').style.display = 'none';
+            document.getElementById('heartSection').style.display = 'block';
+            initDragAndDrop();
+        } else {
+            alert('اسم المستخدم أو كلمة السر غير صحيحة، حاول مجدداً ❤️️');
+        }
+    }
+
+    /* --- برمجة السحب والإفلات للقلب (M + H) --- */
+    let droppedLetters = new Set();
+
+    function initDragAndDrop() {
+        const letters = document.querySelectorAll('.draggable-letter');
+        const dropZone = document.getElementById('heartDropZone');
+
+        letters.forEach(letter => {
+            letter.addEventListener('pointerdown', onPointerDown);
+        });
+
+        function onPointerDown(e) {
+            const letter = e.currentTarget;
+            try { letter.setPointerCapture(e.pointerId); } catch(err) {}
+
+            let rect = letter.getBoundingClientRect();
+            let shiftX = e.clientX - rect.left;
+            let shiftY = e.clientY - rect.top;
+
+            letter.style.position = 'fixed';
+            letter.style.zIndex = '1000';
+            moveAt(e.clientX, e.clientY);
+
+            function moveAt(clientX, clientY) {
+                letter.style.left = (clientX - shiftX) + 'px';
+                letter.style.top = (clientY - shiftY) + 'px';
+            }
+
+            function checkDrop(clientX, clientY) {
+                let zoneRect = dropZone.getBoundingClientRect();
+                return (clientX >= zoneRect.left && clientX <= zoneRect.right &&
+                        clientY >= zoneRect.top && clientY <= zoneRect.bottom);
+            }
+
+            function finishDrop() {
+                document.removeEventListener('pointermove', onPointerMove);
+                letter.removeEventListener('pointerup', onPointerUp);
+                try { letter.releasePointerCapture(e.pointerId); } catch(err) {}
+
+                letter.style.display = 'none';
+                droppedLetters.add(letter.dataset.letter);
+                dropZone.classList.remove('hovered');
+
+                if (droppedLetters.size === 2) {
+                    dropZone.classList.add('completed');
+                    setTimeout(() => {
+                        document.getElementById('poemSection').style.display = 'block';
+                        initScratchCard();
+                    }, 700);
+                }
+            }
+
+            function onPointerMove(ev) {
+                moveAt(ev.clientX, ev.clientY);
+                if (checkDrop(ev.clientX, ev.clientY)) {
+                    dropZone.classList.add('hovered');
+                } else {
+                    dropZone.classList.remove('hovered');
+                }
+            }
+
+            function onPointerUp(ev) {
+                document.removeEventListener('pointermove', onPointerMove);
+                letter.removeEventListener('pointerup', onPointerUp);
+                try { letter.releasePointerCapture(e.pointerId); } catch(err) {}
+
+                if (checkDrop(ev.clientX, ev.clientY)) {
+                    finishDrop();
+                } else {
+                    letter.style.position = 'static';
+                    dropZone.classList.remove('hovered');
+                }
+            }
+
+            document.addEventListener('pointermove', onPointerMove);
+            letter.addEventListener('pointerup', onPointerUp);
+        }
+    }
+
+    /* --- برمجة كارت الكشط --- */
+    function initScratchCard() {
+        const container = document.getElementById('scratchContainer');
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const tool = document.getElementById('scratchTool');
+
+        canvas.width = container.offsetWidth;
+        canvas.height = container.offsetHeight;
+
+        ctx.fillStyle = '#b0b0b0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.font = 'bold 18px Segoe UI, sans-serif';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎁 اسحبي القلب للأعلى والأسفل لكشط البطاقة 🎁', canvas.width / 2, canvas.height / 2);
+
+        function scratch(x, y) {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 35, 0, Math.PI * 2, false);
+            ctx.fill();
+        }
+
+        tool.addEventListener('pointerdown', (e) => {
+            try { tool.setPointerCapture(e.pointerId); } catch(err) {}
+
+            let rect = tool.getBoundingClientRect();
+            let shiftX = e.clientX - rect.left;
+            let shiftY = e.clientY - rect.top;
+
+            tool.style.position = 'fixed';
+            tool.style.zIndex = '1000';
+
+            function moveTool(clientX, clientY) {
+                tool.style.left = (clientX - shiftX) + 'px';
+                tool.style.top = (clientY - shiftY) + 'px';
+
+                const canvasRect = canvas.getBoundingClientRect();
+                let scratchX = clientX - canvasRect.left;
+                let scratchY = clientY - canvasRect.top;
+
+                if (clientX >= canvasRect.left && clientX <= canvasRect.right &&
+                    clientY >= canvasRect.top && clientY <= canvasRect.bottom) {
+                    scratch(scratchX, scratchY);
+                }
+            }
+
+            function onPointerMove(ev) {
+                moveTool(ev.clientX, ev.clientY);
+            }
+
+            function onPointerUp(ev) {
+                document.removeEventListener('pointermove', onPointerMove);
+                tool.removeEventListener('pointerup', onPointerUp);
+                try { tool.releasePointerCapture(e.pointerId); } catch(err) {}
+            }
+
+            document.addEventListener('pointermove', onPointerMove);
+            tool.addEventListener('pointerup', onPointerUp);
+        });
+    }
+
+    /* --- برمجة اختيار الرأي بالصورة --- */
+    function selectOpinion(element) {
+        document.querySelectorAll('.opinion-btn').forEach(btn => btn.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('msgTriggerBtn').style.display = 'inline-block';
+    }
+
+    /* --- التنقل بين الصفحات والعداد --- */
+    function goToPage(pageNum) {
+        document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('page' + pageNum).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if(pageNum === 3) { startCountdown(); }
+    }
+
+    function showMsg() { document.getElementById('msgCard').style.display = 'block'; }
+
+    function startCountdown() {
+        var count = 5;
+        var timerElement = document.getElementById('timer');
+        var interval = setInterval(function() {
+            count--;
+            timerElement.textContent = count;
+            if(count <= 0) {
+                clearInterval(interval);
+                document.getElementById('timerCard').style.display = 'none';
+                document.getElementById('asciiSection').style.display = 'block';
+            }
+        }, 1000);
+    }
+
+    function hideAsciiAndShowImg() {
+        document.getElementById('asciiSection').style.display = 'none';
+        document.getElementById('hiddenImgCard').style.display = 'block';
+    }
+
+    /* --- تأثير العودة بالزمن --- */
+    function timeTravelToFeb() {
+        var overlay = document.getElementById('overlay');
+        document.getElementById('overlayText').textContent = 'جاري العودة بالزمن إلى 2/26...';
+        overlay.classList.add('active');
+        setTimeout(function() {
+            overlay.classList.remove('active');
+            goToPage(4);
+        }, 2200);
+    }
+
+    function timeTravelToSep() {
+        var overlay = document.getElementById('overlay');
+        document.getElementById('overlayText').textContent = 'جاري الانتقال إلى 30/9...';
+        overlay.classList.add('active');
+        setTimeout(function() {
+            overlay.classList.remove('active');
+            goToPage(5);
+        }, 2200);
+    }
+
+    /* --- تشغيل فيديو يوتيوب داخل الصفحة --- */
+    function playMusic() {
+        var videoWrapper = document.getElementById('videoContainer');
+        var iframe = document.getElementById('youtubeIframe');
+        
+        // رابط التضمين المباشر مع خاصية Autoplay
+        iframe.src = "[https://www.youtube.com/embed/vL2w9_9C7ZQ?autoplay=1](https://www.youtube.com/embed/vL2w9_9C7ZQ?autoplay=1)";
+        videoWrapper.style.display = 'block';
+        videoWrapper.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
