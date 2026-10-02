@@ -480,11 +480,11 @@
             </div>
 
             <div class="opinion-section">
-                <p>شو رأيك بالصورة؟ ✨</p>
+                <p>شو رأيك بالصورة؟(احكيلي ايش اخترتي🌚) ✨</p>
                 <div class="opinion-options">
                     <button class="opinion-btn" onclick="selectOpinion(this)">بتجنن! 😍</button>
                     <button class="opinion-btn" onclick="selectOpinion(this)">حلوة كثير ❤️</button>
-                    <button class="opinion-btn" onclick="selectOpinion(this)" يااااااارررربببببب ✨</button>
+                    <button class="opinion-btn" onclick="selectOpinion(this)">ياااااااررربببب🥹💕</button>
                 </div>
             </div>
 
@@ -508,13 +508,13 @@
         <div id="asciiSection" style="display: none;" class="card">
             <pre class="ascii-heart">
 ❤️❤❤     ❤️❤️❤️
-❤️❤️❤     ❤❤❤️️
+❤️❤️❤     ❤❤❤
 ❤️❤️❤     ❤️❤️❤️
 ❤️❤️❤️❤️❤️❤❤️❤️❤️
 ❤️❤❤️❤❤️❤❤️❤️❤️
-❤️️❤❤️     ❤️❤❤️
+❤❤❤️     ❤️❤❤️
 ❤️❤❤️     ❤️❤❤️
-❤️❤❤️     ❤️❤️❤
+❤️️❤❤️     ❤️❤️❤
 ❤️❤️❤     ❤️❤️❤
             </pre>
             <br>
@@ -529,7 +529,7 @@
         </div>
     </div>
 
-    <!-- الصفحة 4: ذكريات شهر 2 -->
+    <!-- الصفحة 4: ذكريات شهر 2 وتفعيل الإهداء الموسيقي -->
     <div id="page4" class="page">
         <div class="card">
             <h2>تاريخ 2/26</h2>
@@ -538,21 +538,6 @@
                 <img src="https://i.ibb.co/NghHzZ1B/IMG-20260930-WA0003.jpg" alt="ذكريات">
                 <img src="https://i.ibb.co/67wsWKpq/IMG-20260930-WA0001.jpg" alt="ذكريات">
                 <img src="https://i.ibb.co/B54NyBfL/IMG-20260930-WA0002.jpg" alt="ذكريات">
-            </div>
-            <br>
-            <button class="btn" onclick="timeTravelToSep()">انتقال</button>
-        </div>
-    </div>
-
-    <!-- الصفحة 5: ذكريات شهر 9 وتفعيل الإهداء -->
-    <div id="page5" class="page">
-        <div class="card">
-            <h2>تاريخ 30/9</h2>
-            <div class="gallery">
-                <img src="https://i.ibb.co/4RX1PLBY/IMG-20260930-WA0004.jpg" alt="ذكريات">
-                <img src="https://i.ibb.co/27yYbxn8/IMG-20260930-WA0005.jpg" alt="ذكريات">
-                <img src="https://i.ibb.co/hxRGB1XR/IMG-20260930-WA0006.jpg" alt="ذكريات">
-                <img src="https://i.ibb.co/fYSPJpJk/IMG-20260930-WA0007.jpg" alt="ذكريات">
             </div>
             <br><br>
             <button class="red-heart-btn" onclick="playMusic()">❤️</button>
@@ -769,16 +754,6 @@
         setTimeout(function() {
             overlay.classList.remove('active');
             goToPage(4);
-        }, 2200);
-    }
-
-    function timeTravelToSep() {
-        var overlay = document.getElementById('overlay');
-        document.getElementById('overlayText').textContent = 'جاري الانتقال إلى 30/9...';
-        overlay.classList.add('active');
-        setTimeout(function() {
-            overlay.classList.remove('active');
-            goToPage(5);
         }, 2200);
     }
 
